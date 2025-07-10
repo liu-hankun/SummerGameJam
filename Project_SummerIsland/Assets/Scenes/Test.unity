@@ -416,7 +416,7 @@ GameObject:
   - component: {fileID: 79860170}
   m_Layer: 0
   m_Name: Area
-  m_TagString: Untagged
+  m_TagString: EnemyArea
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -857,6 +857,7 @@ GameObject:
   - component: {fileID: 605524040}
   - component: {fileID: 605524039}
   - component: {fileID: 605524038}
+  - component: {fileID: 605524043}
   m_Layer: 6
   m_Name: Test-player
   m_TagString: Player
@@ -940,6 +941,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 5
   rb: {fileID: 605524039}
+  animator: {fileID: 605524043}
 --- !u!212 &605524041
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1008,6 +1010,27 @@ Transform:
   - {fileID: 2068889952}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &605524043
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 605524037}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 0cda348466591bf4e8b1e2211f0ad8ec, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1194942818
 GameObject:
   m_ObjectHideFlags: 0
