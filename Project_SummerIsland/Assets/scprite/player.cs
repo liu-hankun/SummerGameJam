@@ -34,7 +34,7 @@ public class player : MonoBehaviour
         animator.SetBool("isRun", isMoving); // 根据移动状态切换 Run/Idle 动画
 
         // 鼠标左键攻击
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetButtonDown("Attack")) // Attack 在 Input Manager 中设置为 mouse 0
         {
             animator.SetTrigger("Attack");
         }
