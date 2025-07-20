@@ -6,6 +6,7 @@ TagManager:
   tags:
   - EnemyArea
   - Food
+  - Bullet
   layers:
   - Default
   - TransparentFX

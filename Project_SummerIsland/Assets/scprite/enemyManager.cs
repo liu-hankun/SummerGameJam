@@ -9,7 +9,8 @@ public class EnemyManager : MonoBehaviour
     {
         public string name;
         public GameObject prefab;
-        public float moveSpeed; 
+        public float moveSpeed;
+        public GameObject dropPrefab; // ? ??????????
         public List<GameObject> instances = new List<GameObject>();
     }
 
@@ -19,13 +20,11 @@ public class EnemyManager : MonoBehaviour
 
     void Start()
     {
-        
         foreach (EnemyType type in enemyTypes)
         {
-            SpawnEnemy(type);
+            SpawnEnemy(type); // ??????????
         }
 
-        
         while (GetTotalEnemyCount() < maxTotalEnemies)
         {
             int randIndex = Random.Range(0, enemyTypes.Count);
@@ -39,12 +38,13 @@ public class EnemyManager : MonoBehaviour
         GameObject enemy = Instantiate(type.prefab, spawnPos, Quaternion.identity);
         type.instances.Add(enemy);
 
-        
+        // ? ?? EnemyMovement ????
         EnemyMovement em = enemy.AddComponent<EnemyMovement>();
         em.manager = this;
         em.type = type;
-        em.moveSpeed = type.moveSpeed; 
+        em.moveSpeed = type.moveSpeed;
         em.moveArea = spawnArea;
+        em.dropPrefab = type.dropPrefab;
     }
 
     Vector2 GetRandomPositionInArea()
@@ -69,25 +69,21 @@ public class EnemyManager : MonoBehaviour
     {
         yield return new WaitForSeconds(3f);
 
-        // ????
         if (destroyedType.instances.Count == 0)
         {
-            // ????????0????????
             SpawnEnemy(destroyedType);
         }
         else
         {
-            // ??????????
             EnemyType spawnType;
             do
             {
                 int randIndex = Random.Range(0, enemyTypes.Count);
                 spawnType = enemyTypes[randIndex];
-            } while (spawnType == destroyedType && enemyTypes.Count > 1); // ?????????????????
+            } while (spawnType == destroyedType && enemyTypes.Count > 1);
 
             SpawnEnemy(spawnType);
         }
-        // ?? ????
     }
 }
 

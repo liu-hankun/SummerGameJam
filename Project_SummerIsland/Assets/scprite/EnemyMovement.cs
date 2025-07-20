@@ -4,54 +4,71 @@ using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour
 {
-    public EnemyManager manager;
+    public int health = 3;
+    public float moveSpeed = 1f;
+    public Collider2D moveArea;
     public EnemyManager.EnemyType type;
-    public float moveSpeed = 2f;
-    public BoxCollider2D moveArea;
+    public EnemyManager manager;
+    public GameObject dropPrefab;
 
-    Vector2 moveDir;
-    float changeDirTimer;
+    private Vector2 targetPos;
 
     void Start()
     {
-        ChooseNewDirection();
+        PickNewTarget();
     }
 
     void Update()
     {
-        transform.Translate(moveDir * moveSpeed * Time.deltaTime);
-
-        // ???????? moveArea ?????
-        Bounds bounds = moveArea.bounds;
-        Vector3 pos = transform.position;
-        if (pos.x < bounds.min.x || pos.x > bounds.max.x)
-            moveDir.x = -moveDir.x;
-        if (pos.y < bounds.min.y || pos.y > bounds.max.y)
-            moveDir.y = -moveDir.y;
-
-        changeDirTimer -= Time.deltaTime;
-        if (changeDirTimer <= 0)
+        transform.position = Vector2.MoveTowards(transform.position, targetPos, moveSpeed * Time.deltaTime);
+        if (Vector2.Distance(transform.position, targetPos) < 0.1f)
         {
-            ChooseNewDirection();
+            PickNewTarget();
         }
     }
 
-    void ChooseNewDirection()
+    void PickNewTarget()
     {
-        moveDir = Random.insideUnitCircle.normalized;
-        changeDirTimer = Random.Range(1f, 3f);
+        Bounds bounds = moveArea.bounds;
+        float x = Random.Range(bounds.min.x, bounds.max.x);
+        float y = Random.Range(bounds.min.y, bounds.max.y);
+        targetPos = new Vector2(x, y);
+    }
+
+    public void TakeDamage(int damage)
+    {
+        health -= damage;
+        if (health <= 0)
+        {
+            Die();
+        }
+    }
+
+    void Die()
+    {
+        SpawnDrop();
+        type.instances.Remove(gameObject); // ? [??]?????????
+        Destroy(gameObject);
+        manager.StartCoroutine(manager.RespawnEnemy(type)); // ? [??]???????
+    }
+
+    void SpawnDrop()
+    {
+        if (dropPrefab != null)
+        {
+            GameObject drop = Instantiate(dropPrefab, transform.position + Vector3.down * 0.5f, Quaternion.identity);
+            Destroy(drop, 2f);
+            InventoryManager.Instance.AddItem(type.name); // ? [??]?????
+        }
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Bullet")) // ? [??]?????
         {
-            // ????
-            type.instances.Remove(gameObject);
-            Destroy(gameObject);
-
-            // 3????
-            manager.StartCoroutine(manager.RespawnEnemy(type));
+            TakeDamage(1);
+            Destroy(other.gameObject);
         }
     }
 }
+
