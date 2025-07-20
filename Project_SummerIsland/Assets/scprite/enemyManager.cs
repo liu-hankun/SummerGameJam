@@ -4,13 +4,15 @@ using UnityEngine;
 
 public class EnemyManager : MonoBehaviour
 {
+    //???????????????????
     [System.Serializable]
     public class EnemyType
     {
         public string name;
         public GameObject prefab;
         public float moveSpeed;
-        public GameObject dropPrefab; // ? ??????????
+        public GameObject dropPrefab;
+        public int maxHealth = 3;
         public List<GameObject> instances = new List<GameObject>();
     }
 
@@ -22,7 +24,7 @@ public class EnemyManager : MonoBehaviour
     {
         foreach (EnemyType type in enemyTypes)
         {
-            SpawnEnemy(type); // ??????????
+            SpawnEnemy(type);
         }
 
         while (GetTotalEnemyCount() < maxTotalEnemies)
@@ -38,12 +40,13 @@ public class EnemyManager : MonoBehaviour
         GameObject enemy = Instantiate(type.prefab, spawnPos, Quaternion.identity);
         type.instances.Add(enemy);
 
-        // ? ?? EnemyMovement ????
+        
         EnemyMovement em = enemy.AddComponent<EnemyMovement>();
         em.manager = this;
         em.type = type;
         em.moveSpeed = type.moveSpeed;
         em.moveArea = spawnArea;
+        em.health = type.maxHealth;
         em.dropPrefab = type.dropPrefab;
     }
 
@@ -86,4 +89,5 @@ public class EnemyManager : MonoBehaviour
         }
     }
 }
+
 

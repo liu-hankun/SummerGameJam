@@ -1,46 +1,50 @@
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
+using TMPro;
 
 public class InventoryManager : MonoBehaviour
 {
+    //????????????????????????????
     public static InventoryManager Instance;
-    private Dictionary<string, int> inventory = new Dictionary<string, int>();
+    public Dictionary<string, int> inventory = new Dictionary<string, int>();
+    public TextMeshProUGUI uiText;
 
-    [Header("UI")]
-    public TextMeshProUGUI inventoryText;
-
-    void Awake()
+    private void Awake()
     {
-        if (Instance == null)
-            Instance = this;
-    }
-
-    public void AddItem(string itemName)
-    {
-        if (!inventory.ContainsKey(itemName))
-            inventory[itemName] = 0;
-
-        inventory[itemName]++;
+        Instance = this;
+        inventory["mango"] = 0;
+        inventory["coconut"] = 0;
+        inventory["garpe"] = 0;
+        inventory["ice"] = 0;
         UpdateUI();
     }
 
-    public int GetItemCount(string itemName)
+    public void AddItem(string name)
     {
-        return inventory.ContainsKey(itemName) ? inventory[itemName] : 0;
+        if (!inventory.ContainsKey(name)) inventory[name] = 0;
+        inventory[name]++;
+        UpdateUI();
     }
 
-    void UpdateUI()
+    public bool UseItem(string name)
     {
-        if (inventoryText == null) return;
+        if (inventory.ContainsKey(name) && inventory[name] > 0)
+        {
+            inventory[name]--;
+            UpdateUI();
+            return true;
+        }
+        return false;
+    }
 
-        string content = "we have:\n";
+    public void UpdateUI()
+    {
+        uiText.text = "";
         foreach (var pair in inventory)
         {
-            content += $"{pair.Key} x {pair.Value}\n";
+            uiText.text += $"{pair.Key}: {pair.Value}\n";
         }
-        inventoryText.text = content;
     }
-}
 
+    public bool HasItem(string name) => inventory.ContainsKey(name) && inventory[name] > 0;
+}
