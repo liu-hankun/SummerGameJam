@@ -1163,19 +1163,19 @@ MonoBehaviour:
     prefab: {fileID: 8452651340784577737, guid: 37cd6d0db666aeb4e882e4840430837c, type: 3}
     moveSpeed: 3
     dropPrefab: {fileID: 391993671}
-    maxHealth: 6
+    maxHealth: 3
     instances: []
   - name: mango
     prefab: {fileID: 4171753421435582166, guid: f54666641c50db24cbb4d8fc14236e36, type: 3}
     moveSpeed: 5
     dropPrefab: {fileID: 1419877583}
-    maxHealth: 4
+    maxHealth: 2
     instances: []
   - name: grape
     prefab: {fileID: 2813316653540475345, guid: 4fa5689aec8704849af07fa9018ea114, type: 3}
     moveSpeed: 8
     dropPrefab: {fileID: 86787552}
-    maxHealth: 2
+    maxHealth: 1
     instances: []
   maxTotalEnemies: 5
   spawnArea: {fileID: 79860170}
@@ -2051,7 +2051,7 @@ Transform:
   m_GameObject: {fileID: 1167102290}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.1377308, y: 5.766777, z: 0}
+  m_LocalPosition: {x: -2.1377308, y: 27.57, z: 0}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

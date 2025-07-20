@@ -14,8 +14,8 @@ public class InventoryManager : MonoBehaviour
         Instance = this;
         inventory["mango"] = 0;
         inventory["coconut"] = 0;
-        inventory["garpe"] = 0;
-        inventory["ice"] = 0;
+        inventory["grape"] = 0;
+        inventory["Ice"] = 0;
         UpdateUI();
     }
 
