@@ -2,14 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
 public class FridgeTool : MonoBehaviour, IKitchenTool
 {
+    public FridgeUIManager uiManager;
+
     public void Interact(player player)
     {
-        string[] options = { "Ã¢¹û¹ûÈâ", "Ò¬ÄÌ", "ÆÏÌÑ¹ûÈâ" };
-        string chosen = options[Random.Range(0, options.Length)];
-        KitchenSystem.Instance.AddIngredient(chosen);
-        Debug.Log("´Ó±ùÏäÄÃ³ö£º" + chosen);
+        if (uiManager != null)
+        {
+            uiManager.OpenPanel();
+        }
     }
 }
-

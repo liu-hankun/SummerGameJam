@@ -8,9 +8,10 @@ public class player : MonoBehaviour
     public float moveSpeed = 5f; 
     public Rigidbody2D rb; 
     private Vector2 moveInput; 
-    public Animator animator; 
+    public Animator animator;
 
-   
+    private IKitchenTool nearbyTool = null;
+
 
     private GameObject heldItem = null; 
     private GameObject nearbyFood = null; 
@@ -31,9 +32,14 @@ public class player : MonoBehaviour
 
         
         bool isMoving = moveInput.sqrMagnitude > 0.01f;
-        animator.SetBool("isRun", isMoving); 
+        animator.SetBool("isRun", isMoving);
 
-        
+
+        if (Input.GetKeyDown(KeyCode.E) && nearbyTool != null)
+        {
+            nearbyTool.Interact(this);
+        }
+
         if (Input.GetMouseButtonDown(0)) 
         {
             animator.SetTrigger("Attack");
@@ -74,6 +80,10 @@ public class player : MonoBehaviour
         {
             nearbyFood = other.gameObject;
         }
+        if (other.CompareTag("KitchenObject"))
+        {
+            nearbyTool = other.GetComponent<IKitchenTool>();
+        }
     }
 
     void OnTriggerExit2D(Collider2D other)
@@ -81,6 +91,13 @@ public class player : MonoBehaviour
         if (other.CompareTag("Food") && other.gameObject == nearbyFood)
         {
             nearbyFood = null;
+        }
+        if (other.CompareTag("KitchenObject"))
+        {
+            if (other.GetComponent<IKitchenTool>() == nearbyTool)
+            {
+                nearbyTool = null;
+            }
         }
     }
 }
