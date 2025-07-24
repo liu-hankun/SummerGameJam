@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class KitchenSystem : MonoBehaviour
 {
     public static KitchenSystem Instance;
+    public RecipeBook recipeBook;
     private List<string> currentIngredients = new List<string>();
 
     void Awake()
@@ -32,5 +34,30 @@ public class KitchenSystem : MonoBehaviour
     public void PrintIngredients()
     {
         Debug.Log("当前食材：" + string.Join(", ", currentIngredients));
+    }
+   
+    public void CheckRecipe()
+    {
+        foreach (var recipe in recipeBook.recipes)
+        {
+            if (MatchRecipe(recipe.ingredients))
+            {
+                Debug.Log("你制作了料理：" + recipe.recipeName);
+                currentIngredients.Clear();
+                return;
+            }
+        }
+
+        Debug.Log("组合失败，没有匹配的料理！");
+    }
+
+    private bool MatchRecipe(List<string> required)
+    {
+        List<string> current = new List<string>(currentIngredients);
+        current.Sort();
+        List<string> check = new List<string>(required);
+        check.Sort();
+
+        return current.SequenceEqual(check);
     }
 }
