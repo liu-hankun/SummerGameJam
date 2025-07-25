@@ -13,16 +13,36 @@ MonoBehaviour:
   m_Name: Recipe
   m_EditorClassIdentifier: 
   recipes:
-  - recipeName: "\u8292\u679C\u8461\u8404\u51B0\u676F"
+  - recipeName: "\u8292\u679C\u51B0\u6C99 "
     ingredients:
-    - "\u5228\u51B0"
-    - "\u5207\u597D\u7684\u8292\u679C"
-    - "\u5207\u597D\u7684\u8461\u8404"
-  - recipeName: "\u8292\u679C\u51B0\u6C99"
+    - Ice
+    - mango
+  - recipeName: " \u6930\u5B50\u5976\u6614"
     ingredients:
-    - "\u5228\u51B0"
-    - "\u5207\u597D\u7684\u8292\u679C"
+    - Ice
+    - coconut
   - recipeName: "\u8461\u8404\u51B0\u6C99"
     ingredients:
-    - "\u5228\u51B0"
-    - "\u5207\u597D\u7684\u8461\u8404"
+    - Ice
+    - grape
+  - recipeName: "\u8461\u8404\u8292\u679C\u51B0\u676F "
+    ingredients:
+    - Ice
+    - mango
+    - grape
+  - recipeName: "\u6930\u5B50\u8292\u679C\u51B0 "
+    ingredients:
+    - Ice
+    - mango
+    - coconut
+  - recipeName: "\u8461\u8404\u6930\u5B50\u51B0\u6C99 "
+    ingredients:
+    - Ice
+    - grape
+    - coconut
+  - recipeName: "\u5168\u5BB6\u798F"
+    ingredients:
+    - Ice
+    - grape
+    - coconut
+    - mango

@@ -4,7 +4,7 @@ using TMPro;
 
 public class InventoryManager : MonoBehaviour
 {
-    //????????????????????????????
+
     public static InventoryManager Instance;
     public Dictionary<string, int> inventory = new Dictionary<string, int>();
     public TextMeshProUGUI uiText;
@@ -17,6 +17,11 @@ public class InventoryManager : MonoBehaviour
         inventory["grape"] = 0;
         inventory["Ice"] = 0;
         UpdateUI();
+
+        if (Instance == null)
+        {
+            Instance = this;
+        }
     }
 
     public void AddItem(string name)

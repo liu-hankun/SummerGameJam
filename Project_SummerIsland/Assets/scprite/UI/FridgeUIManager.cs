@@ -1,41 +1,96 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
+using System.Collections.Generic;
 
 public class FridgeUIManager : MonoBehaviour
 {
     public GameObject fridgePanel;
+
     public Button mangoButton;
     public Button coconutButton;
     public Button grapeButton;
 
-    // ´ò¿ªÃæ°åÊ±ÓÉ FridgeTool µ÷ÓÃ
+    public GameObject mangoPrefab;
+    public GameObject coconutPrefab;
+    public GameObject grapePrefab;
+
+    public TextMeshProUGUI inventoryText;
+
     public void OpenPanel()
     {
         fridgePanel.SetActive(true);
 
-        // ¼¤»î°´Å¥
         mangoButton.interactable = true;
         coconutButton.interactable = true;
         grapeButton.interactable = true;
+
+        RefreshInventoryDisplay();
     }
 
-    // Íæ¼Òµã»÷°´Å¥Ñ¡Ê³²ÄÊ±µ÷ÓÃ
     public void SelectItem(string itemName)
     {
-        KitchenSystem.Instance.AddIngredient(itemName);
-        Debug.Log("Äã´Ó±ùÏäÄÃ³ö£º" + itemName);
+        player player = FindObjectOfType<player>();
+        if (player == null || player.IsHoldingItem())
+        {
+            Debug.Log("ç©å®¶ä¸å­˜åœ¨æˆ–æ‰‹ä¸Šå·²æœ‰ç‰©å“ï¼");
+            ClosePanel();
+            return;
+        }
 
-        ClosePanel(); // ×Ô¶¯¹Ø±Õ
+        GameObject prefab = null;
+
+        switch (itemName)
+        {
+            case "èŠ’æœæœè‚‰":
+                prefab = mangoPrefab;
+                break;
+            case "æ¤°å¥¶":
+                prefab = coconutPrefab;
+                break;
+            case "è‘¡è„æœè‚‰":
+                prefab = grapePrefab;
+                break;
+        }
+
+        if (prefab != null)
+        {
+            player.ReceiveItem(prefab); // ç©å®¶æ‰‹æŒé¢„åˆ¶ä½“
+            KitchenSystem.Instance.AddIngredient(itemName); // æ›´æ–°ç³»ç»Ÿæ•°æ®
+            Debug.Log("ä»å†°ç®±æ‹¿å‡ºï¼š" + itemName);
+        }
+
+        ClosePanel();
     }
 
-    // µã»÷¡°¹Ø±Õ¡±°´Å¥»òÑ¡Ôñºó¹Ø±Õ
     public void ClosePanel()
     {
         fridgePanel.SetActive(false);
 
-        // ½ûÓÃ°´Å¥
         mangoButton.interactable = false;
         coconutButton.interactable = false;
         grapeButton.interactable = false;
+    }
+
+    private void RefreshInventoryDisplay()
+    {
+        if (InventoryManager.Instance == null || inventoryText == null)
+        {
+            Debug.LogWarning("InventoryManager æˆ– UI å°šæœªåˆå§‹åŒ–ï¼");
+            return;
+        }
+
+        Dictionary<string, int> inv = InventoryManager.Instance.inventory;
+
+        inventoryText.text = $"åº“å­˜ï¼š\n";
+        inventoryText.text += $"èŠ’æœï¼š{GetSafeCount(inv, "mango")}\n";
+        inventoryText.text += $"æ¤°å­ï¼š{GetSafeCount(inv, "coconut")}\n";
+        inventoryText.text += $"è‘¡è„ï¼š{GetSafeCount(inv, "grape")}\n";
+        inventoryText.text += $"å†°å—ï¼š{GetSafeCount(inv, "Ice")}\n";
+    }
+
+    private int GetSafeCount(Dictionary<string, int> inv, string key)
+    {
+        return inv.ContainsKey(key) ? inv[key] : 0;
     }
 }
