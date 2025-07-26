@@ -1,17 +1,21 @@
-using UnityEngine;
+Ôªøusing UnityEngine;
+using System.Collections;
 
 public class OrderManager : MonoBehaviour
 {
     public static OrderManager Instance;
 
-    public RecipeBook recipeBook; // »ŒŒÒ∫Ú—°≤Àµ•
+    public RecipeBook recipeBook;
     public string currentOrder = "";
     public int score = 0;
 
+    public float orderTimeLimit = 60f;
+    private float timer;
+
     void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        if (Instance != null) Destroy(gameObject);
+        else Instance = this;
     }
 
     void Start()
@@ -19,18 +23,35 @@ public class OrderManager : MonoBehaviour
         PickNewOrder();
     }
 
+    void Update()
+    {
+        if (currentOrder != "")
+        {
+            timer -= Time.deltaTime;
+            UIOrderPanel.Instance?.UpdateTimerDisplay(timer);
+
+            if (timer <= 0f)
+            {
+                Debug.Log("‚è±Ô∏è ‰ªªÂä°Ë∂ÖÊó∂Ôºö" + currentOrder);
+                PickNewOrder();
+            }
+        }
+    }
+
     public void PickNewOrder()
     {
-        if (recipeBook.recipes.Count == 0)
+        if (recipeBook == null || recipeBook.recipes.Count == 0)
         {
-            Debug.LogWarning("≈‰∑ΩŒ™ø’£¨Œﬁ∑®…˙≥…»ŒŒÒ£°");
+            Debug.LogError("üìõ RecipeBook Êú™ÁªëÂÆöÊàñ‰∏∫Á©∫ÔºÅ");
             return;
         }
 
         int index = Random.Range(0, recipeBook.recipes.Count);
         currentOrder = recipeBook.recipes[index].recipeName;
+        timer = orderTimeLimit;
+
+        Debug.Log("üéØ Êñ∞‰ªªÂä°Ôºö" + currentOrder);
         UIOrderPanel.Instance?.UpdateDisplay(currentOrder, score);
-        Debug.Log("–¬»ŒŒÒ£∫÷∆◊˜ " + currentOrder);
     }
 
     public void CompleteOrder(string recipeName)
@@ -38,14 +59,12 @@ public class OrderManager : MonoBehaviour
         if (recipeName == currentOrder)
         {
             score += 10;
-            Debug.Log("»ŒŒÒÕÍ≥…£°+10∑÷£¨◊‹∑÷£∫" + score);
+            Debug.Log("‚úÖ ÂÆåÊàê‰ªªÂä°Ôºö" + recipeName + "ÔºåÂΩìÂâçÂæóÂàÜÔºö" + score);
             PickNewOrder();
         }
         else
         {
-            Debug.Log("ÕÍ≥…¡À " + recipeName + "£¨µ´≤ª «µ±«∞»ŒŒÒ£∫" + currentOrder);
+            Debug.Log("‚ùå Êèê‰∫§ÈîôËØØ‰ªªÂä°Ôºö" + recipeName + "ÔºåÂΩìÂâç‰ªªÂä°ÊòØÔºö" + currentOrder);
         }
-
-        UIOrderPanel.Instance?.UpdateDisplay(currentOrder, score);
     }
 }

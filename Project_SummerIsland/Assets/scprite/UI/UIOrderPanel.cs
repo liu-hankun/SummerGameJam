@@ -1,5 +1,5 @@
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 
 public class UIOrderPanel : MonoBehaviour
 {
@@ -7,19 +7,29 @@ public class UIOrderPanel : MonoBehaviour
 
     public TextMeshProUGUI orderText;
     public TextMeshProUGUI scoreText;
+    public TextMeshProUGUI timerText;
 
     void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        if (Instance != null) Destroy(gameObject);
+        else Instance = this;
     }
 
     public void UpdateDisplay(string currentOrder, int score)
     {
         if (orderText != null)
-            orderText.text = $"任务：{currentOrder}";
+            orderText.text = $"Order: {currentOrder}";
 
         if (scoreText != null)
-            scoreText.text = $"分数：{score}";
+            scoreText.text = $"Score: {score}";
+    }
+
+    public void UpdateTimerDisplay(float time)
+    {
+        if (timerText != null)
+        {
+            int seconds = Mathf.CeilToInt(time);
+            timerText.text = $"Time: {seconds}s";
+        }
     }
 }

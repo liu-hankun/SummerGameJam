@@ -13,34 +13,34 @@ MonoBehaviour:
   m_Name: Recipe
   m_EditorClassIdentifier: 
   recipes:
-  - recipeName: "\u8292\u679C\u51B0\u6C99 "
+  - recipeName: Mango Smoothie
     ingredients:
     - Ice
     - mango
-  - recipeName: " \u6930\u5B50\u5976\u6614"
+  - recipeName: coconut Smoothie
     ingredients:
     - Ice
     - coconut
-  - recipeName: "\u8461\u8404\u51B0\u6C99"
+  - recipeName: Grape Smoothie
     ingredients:
     - Ice
     - grape
-  - recipeName: "\u8461\u8404\u8292\u679C\u51B0\u676F "
+  - recipeName: Grape and mango ice cup
     ingredients:
     - Ice
     - mango
     - grape
-  - recipeName: "\u6930\u5B50\u8292\u679C\u51B0 "
+  - recipeName: Grape and mango ice cup
     ingredients:
     - Ice
     - mango
     - coconut
-  - recipeName: "\u8461\u8404\u6930\u5B50\u51B0\u6C99 "
+  - recipeName: Grape and coconut smoothie
     ingredients:
     - Ice
     - grape
     - coconut
-  - recipeName: "\u5168\u5BB6\u798F"
+  - recipeName: family portrait smoothie
     ingredients:
     - Ice
     - grape
