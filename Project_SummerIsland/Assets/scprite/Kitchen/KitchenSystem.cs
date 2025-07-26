@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -17,7 +17,7 @@ public class KitchenSystem : MonoBehaviour
     public void AddIngredient(string name)
     {
         currentIngredients.Add(name);
-        Debug.Log("Ìí¼ÓÊ³²Ä£º" + name);
+        Debug.Log("æ·»åŠ é£Ÿæï¼š" + name);
     }
 
     public bool HasIngredient(string name)
@@ -28,27 +28,28 @@ public class KitchenSystem : MonoBehaviour
     public void RemoveIngredient(string name)
     {
         currentIngredients.Remove(name);
-        Debug.Log("ÒÆ³ıÊ³²Ä£º" + name);
+        Debug.Log("ç§»é™¤é£Ÿæï¼š" + name);
     }
 
     public void PrintIngredients()
     {
-        Debug.Log("µ±Ç°Ê³²Ä£º" + string.Join(", ", currentIngredients));
+        Debug.Log("å½“å‰é£Ÿæï¼š" + string.Join(", ", currentIngredients));
     }
-   
+
     public void CheckRecipe()
     {
         foreach (var recipe in recipeBook.recipes)
         {
             if (MatchRecipe(recipe.ingredients))
             {
-                Debug.Log("ÄãÖÆ×÷ÁËÁÏÀí£º" + recipe.recipeName);
+                Debug.Log("ä½ åˆ¶ä½œäº†æ–™ç†ï¼š" + recipe.recipeName);
+                OrderManager.Instance?.CompleteOrder(recipe.recipeName); // âœ… ä»»åŠ¡åˆ¤æ–­ + åŠ åˆ†
                 currentIngredients.Clear();
                 return;
             }
         }
 
-        Debug.Log("×éºÏÊ§°Ü£¬Ã»ÓĞÆ¥ÅäµÄÁÏÀí£¡");
+        Debug.Log("ç»„åˆå¤±è´¥ï¼Œæ²¡æœ‰åŒ¹é…çš„æ–™ç†ï¼");
     }
 
     private bool MatchRecipe(List<string> required)

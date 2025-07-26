@@ -44,7 +44,7 @@ public class InventoryManager : MonoBehaviour
 
     public void UpdateUI()
     {
-        uiText.text = "";
+        uiText.text = " ";
         foreach (var pair in inventory)
         {
             uiText.text += $"{pair.Key}: {pair.Value}\n";
