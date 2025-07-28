@@ -16,6 +16,8 @@ public class gameCollocter : MonoBehaviour
     public GameObject UI2;
     public GameObject UI3;
     public GameObject UI4;
+    public GameObject UI5; // pause panel
+    
 
     private bool gameEnded = false;
     // Start is called before the first frame update
@@ -28,6 +30,7 @@ public class gameCollocter : MonoBehaviour
         UI2.SetActive(true);
         UI3.SetActive(true);
         UI4.SetActive(true);
+        UI5.SetActive(false);
     }
 
     // Update is called once per frame
@@ -43,6 +46,16 @@ public class gameCollocter : MonoBehaviour
         if (currentTime <= 0f)
         {
             EndGame();
+        }
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            UI5.SetActive(true);
+            Time.timeScale = 0;
+        }
+        else if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            UI5.SetActive(false);
+            Time.timeScale = 1;
         }
     }
     void EndGame()
@@ -64,4 +77,10 @@ public class gameCollocter : MonoBehaviour
     {
         SceneManager.LoadScene("Test");
     }
+    public void backtoGame()
+    {
+        UI5.SetActive(false);
+        Time.timeScale = 1;
+    }
+   
 }
