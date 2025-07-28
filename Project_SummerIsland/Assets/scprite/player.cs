@@ -17,6 +17,10 @@ public class player : MonoBehaviour
     private GameObject nearbyFood = null;
     public Transform headPoint;
 
+    public GameObject gunUI;
+    public GameObject hintUI;
+    //public MonoBehaviour bulletShooterScript; 
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -29,8 +33,8 @@ public class player : MonoBehaviour
         float moveY = Input.GetAxisRaw("Vertical");
         moveInput = new Vector2(moveX, moveY).normalized;
 
-        bool isMoving = moveInput.sqrMagnitude > 0.01f;
-        animator.SetBool("isRun", isMoving);
+        //bool isMoving = moveInput.sqrMagnitude > 0.01f;
+        //animator.SetBool("isRun", isMoving);
 
         // E键：与厨房工具互动（如冰箱）
         if (Input.GetKeyDown(KeyCode.E) && nearbyTool != null && heldItem == null)
@@ -47,13 +51,23 @@ public class player : MonoBehaviour
         // 鼠标左键：攻击动画
         if (Input.GetMouseButtonDown(0))
         {
-            animator.SetTrigger("Attack");
+            //animator.SetTrigger("Attack");
         }
 
         // 空格键：拾取或放下物品
         if (Input.GetKeyDown(KeyCode.Space))
         {
             TryPickup();
+        }
+
+        if (Input.GetKey(KeyCode.A))
+        {
+            animator.SetBool("turnLeft", true);
+        }
+        
+        if (Input.GetKey(KeyCode.D))
+        {
+            animator.SetBool("turnLeft", false);
         }
     }
 
@@ -115,6 +129,16 @@ public class player : MonoBehaviour
         {
             nearbyAssemblyTool = other.GetComponent<IKitchenTool>();
         }
+
+        if (other.CompareTag("enemysarea"))
+        {
+            if (gunUI != null) gunUI.SetActive(true);
+            //if (bulletShooterScript != null) bulletShooterScript.enabled = true;
+        }
+        if(other.CompareTag("hint"))
+        {
+            hintUI.SetActive(true);
+        }
     }
 
     void OnTriggerExit2D(Collider2D other)
@@ -138,6 +162,15 @@ public class player : MonoBehaviour
             {
                 nearbyAssemblyTool = null;
             }
+        }
+        if (other.CompareTag("enemysarea"))
+        {
+            if (gunUI != null) gunUI.SetActive(false);
+            //if (bulletShooterScript != null) bulletShooterScript.enabled = false;
+        }
+        if (other.CompareTag("hint"))
+        {
+            hintUI.SetActive(false);
         }
     }
 }

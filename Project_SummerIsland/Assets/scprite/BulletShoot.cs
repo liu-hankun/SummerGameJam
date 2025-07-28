@@ -18,14 +18,20 @@ public class BulletShooter : MonoBehaviour
     {
         fireCooldown -= Time.deltaTime;
 
+        // ? ????????
+        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mouseWorldPos.z = 0f;
+
+        // ? ?????????????
+        Vector3 direction = (mouseWorldPos - transform.position).normalized;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0, 0, angle); // ?? ????????
+
+        // ? ??????
         if (Input.GetMouseButton(0) && fireCooldown <= 0f)
         {
-            Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector2 shootDirection = (mouseWorldPos - transform.position).normalized;
-            float angle = Mathf.Atan2(shootDirection.y, shootDirection.x) * Mathf.Rad2Deg;
-
             GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.Euler(0, 0, angle));
-            bullet.GetComponent<Rigidbody2D>().velocity = shootDirection * 10f;
+            bullet.GetComponent<Rigidbody2D>().velocity = direction * 10f;
 
             fireCooldown = fireRate;
         }

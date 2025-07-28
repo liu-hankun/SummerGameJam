@@ -42,13 +42,13 @@ public class FridgeUIManager : MonoBehaviour
 
         switch (itemName)
         {
-            case "芒果果肉":
+            case "Mango":
                 prefab = mangoPrefab;
                 break;
-            case "椰奶":
+            case "Coconut":
                 prefab = coconutPrefab;
                 break;
-            case "葡萄果肉":
+            case "Grape":
                 prefab = grapePrefab;
                 break;
         }
@@ -82,11 +82,11 @@ public class FridgeUIManager : MonoBehaviour
 
         Dictionary<string, int> inv = InventoryManager.Instance.inventory;
 
-        inventoryText.text = $"库存：\n";
-        inventoryText.text += $"芒果：{GetSafeCount(inv, "mango")}\n";
-        inventoryText.text += $"椰子：{GetSafeCount(inv, "coconut")}\n";
-        inventoryText.text += $"葡萄：{GetSafeCount(inv, "grape")}\n";
-        inventoryText.text += $"冰块：{GetSafeCount(inv, "Ice")}\n";
+        inventoryText.text = $"Your Food:\n";
+        inventoryText.text += $"Mango:{GetSafeCount(inv, "mango")}\n";
+        inventoryText.text += $"Cocount:{GetSafeCount(inv, "coconut")}\n";
+        inventoryText.text += $"Grape:{GetSafeCount(inv, "grape")}\n";
+        inventoryText.text += $"Ice:{GetSafeCount(inv, "Ice")}\n";
     }
 
     private int GetSafeCount(Dictionary<string, int> inv, string key)
