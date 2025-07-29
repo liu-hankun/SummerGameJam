@@ -12,10 +12,10 @@ public class gameCollocter : MonoBehaviour
 
     public TextMeshProUGUI timerText;      
     public GameObject endPanel;
-    public GameObject UI1;
-    public GameObject UI2;
-    public GameObject UI3;
-    public GameObject UI4;
+    public GameObject UI1; // scoretext
+    public GameObject UI2; // orderText
+    public GameObject UI3; // inventoryText
+    public GameObject UI4; // time
     public GameObject UI5; // pause panel
     
 
