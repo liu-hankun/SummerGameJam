@@ -1,4 +1,9 @@
 # SummerGameJam
+- 7.28 Hankun
+- 主要就是加了一些动画和一个game manager，里面主要是一些UI的关闭和暂停面板以及游戏结束面板，其中可以调整游戏持续时间
+然后加了start scene。剩下的功能就看你了
+
+
 - 7.20 Hankun
 - 我这边新添加了6个脚本，都是关于食材区域的。
 - -首先最重要的脚本是EnemyManager，这个脚本跟EnemyMovement相关联，里面包含了除了冰块以外所有的怪物的功能，移动，血量，速度，掉落物。你直接把EnemyManager绑定给一个空的game object就可以实现功能。然后你就可以添加想要的信息在里。在Test Scene里面我挂载到同名（EnemyManager）的文件下面的了。Spawn Area就是带有collider2D的食材移动区域
