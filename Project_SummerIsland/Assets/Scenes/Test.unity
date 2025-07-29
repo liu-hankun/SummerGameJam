@@ -10008,7 +10008,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ceae28577bbb8c4fb6b7b26a9f2ef6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameTime: 40
+  gameTime: 300
   timerText: {fileID: 2010897661}
   endPanel: {fileID: 672607832}
   UI1: {fileID: 1027720862}
