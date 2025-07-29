@@ -13,6 +13,7 @@ public class EnemyManager : MonoBehaviour
         public float moveSpeed;
         public GameObject dropPrefab;
         public int maxHealth = 3;
+        public int scoreValue = 10;
         public List<GameObject> instances = new List<GameObject>();
     }
 
