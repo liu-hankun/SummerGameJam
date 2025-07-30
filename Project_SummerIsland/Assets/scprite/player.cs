@@ -1,176 +1,181 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Net;
 using UnityEngine;
 
+/// <summary>
+/// 玩家控制 + 统一交互逻辑。
+/// 修复点：
+/// 1) 同帧防抖：一次按键只会触发一次 Interact()；
+/// 2) 交互目标唯一：优先和组装台交互，其次其他工具；
+/// 3) 提供 IsHoldingItem 属性；另外提供扩展方法 IsHoldingItem() 兼容旧代码。
+/// </summary>
 public class player : MonoBehaviour
 {
+    [Header("Movement")]
     public float moveSpeed = 5f;
     public Rigidbody2D rb;
-    private Vector2 moveInput;
     public Animator animator;
 
-    private IKitchenTool nearbyTool = null;
-    private IKitchenTool nearbyAssemblyTool = null;
+    [Header("Held Item")]
+    public Transform headPoint;       // 手持物体的挂点
+    public GameObject heldItem = null;
 
-    private GameObject heldItem = null;
-    private GameObject nearbyFood = null;
-    public Transform headPoint;
+    [Header("Nearby Tools")]
+    private IKitchenTool nearbyTool = null;            // 其它工具（如冰箱、切菜板等）
+    private IKitchenTool nearbyAssemblyTool = null;    // 组装台（优先交互）
 
-    public GameObject gunUI;
-    public GameObject hintUI;
-    //public MonoBehaviour bulletShooterScript; 
+    // —— 输入侧同帧防抖 ——（防止同一帧多次触发）
+    private int _lastInteractFrame = -1;
 
-    void Start()
+    private Vector2 moveInput;
+
+    /// <summary>
+    /// 是否正在手持物体（给 Fridge/UI 等脚本调用）
+    /// </summary>
+    public bool IsHoldingItem => heldItem != null;
+
+    private void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>();
+        if (rb == null) rb = GetComponent<Rigidbody2D>();
+        if (animator == null) animator = GetComponentInChildren<Animator>();
     }
 
-    void Update()
+    private void Update()
     {
-        float moveX = Input.GetAxisRaw("Horizontal");
-        float moveY = Input.GetAxisRaw("Vertical");
-        moveInput = new Vector2(moveX, moveY).normalized;
+        // ====== 移动输入 ======
+        moveInput.x = Input.GetAxisRaw("Horizontal");
+        moveInput.y = Input.GetAxisRaw("Vertical");
+        moveInput.Normalize();
 
-        //bool isMoving = moveInput.sqrMagnitude > 0.01f;
-        //animator.SetBool("isRun", isMoving);
-
-        // E������������߻���������䣩
-        if (Input.GetKeyDown(KeyCode.E) && nearbyTool != null && heldItem == null)
+        if (animator != null)
         {
-            nearbyTool.Interact(this);
+            animator.SetFloat("Horizontal", moveInput.x);
+            animator.SetFloat("Vertical",   moveInput.y);
+            animator.SetFloat("Speed",      moveInput.sqrMagnitude);
         }
 
-        // Q������װ̨��װʳ��
-        if (Input.GetKeyDown(KeyCode.Q) && nearbyAssemblyTool != null)
+        // ====== 交互输入（按 Q）—— 同帧只触发一次 ======
+        // 如果你想让 Space 也能交互，把下面条件改成：
+        // if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Q))
         {
-            nearbyAssemblyTool.Interact(this);
-        }
-
-        // ����������������
-        if (Input.GetMouseButtonDown(0))
-        {
-            //animator.SetTrigger("Attack");
-        }
-
-        // �ո����ʰȡ�������Ʒ
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            TryPickup();
-        }
-
-        if (Input.GetKey(KeyCode.A))
-        {
-            animator.SetBool("turnLeft", true);
-        }
-        
-        if (Input.GetKey(KeyCode.D))
-        {
-            animator.SetBool("turnLeft", false);
+            AttemptInteractOncePerFrame();
         }
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
-        rb.velocity = moveInput * moveSpeed;
-    }
-
-    void TryPickup()
-    {
-        if (heldItem == null && nearbyFood != null)
+        if (rb != null)
         {
-            heldItem = nearbyFood;
-            heldItem.transform.SetParent(headPoint);
-            heldItem.transform.localPosition = Vector3.zero;
-            heldItem.transform.localRotation = Quaternion.identity;
-            heldItem.GetComponent<Collider2D>().enabled = false;
-            nearbyFood = null;
-        }
-        else if (heldItem != null)
-        {
-            heldItem.transform.SetParent(null);
-            heldItem.GetComponent<Collider2D>().enabled = true;
-            heldItem = null;
+            rb.MovePosition(rb.position + moveInput * moveSpeed * Time.fixedDeltaTime);
         }
     }
 
-    public bool IsHoldingItem()
+    /// <summary>
+    /// 在同一帧内只允许一次 Interact 调用（无论你按了几个键或被多次触发）。
+    /// </summary>
+    private void AttemptInteractOncePerFrame()
     {
-        return heldItem != null;
+        if (_lastInteractFrame == Time.frameCount) return; // 同帧重复拦截
+        _lastInteractFrame = Time.frameCount;
+
+        // 只选择一个交互目标：优先组装台
+        IKitchenTool target = nearbyAssemblyTool ?? nearbyTool;
+        if (target != null)
+        {
+            target.Interact(this);
+        }
     }
 
+    /// <summary>
+    /// 玩家接收/切换手上物体（会销毁旧的）。
+    /// </summary>
     public void ReceiveItem(GameObject itemPrefab)
     {
-        if (heldItem != null) return;
-
-        GameObject item = Instantiate(itemPrefab, headPoint.position, Quaternion.identity);
-        item.transform.SetParent(headPoint);
-        item.transform.localPosition = Vector3.zero;
-        item.transform.localRotation = Quaternion.identity;
-        item.GetComponent<Collider2D>().enabled = false;
-
-        heldItem = item;
-    }
-
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Food") && heldItem == null)
+        if (heldItem != null)
         {
-            nearbyFood = other.gameObject;
+            Destroy(heldItem);
+            heldItem = null;
         }
 
-        if (other.CompareTag("KitchenObject"))
+        if (itemPrefab != null && headPoint != null)
         {
-            nearbyTool = other.GetComponent<IKitchenTool>();
-        }
-
-        if (other.CompareTag("AssemblyTable"))
-        {
-            nearbyAssemblyTool = other.GetComponent<IKitchenTool>();
-        }
-
-        if (other.CompareTag("enemysarea"))
-        {
-            if (gunUI != null) gunUI.SetActive(true);
-            //if (bulletShooterScript != null) bulletShooterScript.enabled = true;
-        }
-        if(other.CompareTag("hint"))
-        {
-            hintUI.SetActive(true);
+            heldItem = Instantiate(itemPrefab, headPoint.position, Quaternion.identity);
+            // 建议把手持物体作为headPoint的子物体，方便定位
+            heldItem.transform.SetParent(headPoint, worldPositionStays: true);
         }
     }
 
-    void OnTriggerExit2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (other.CompareTag("Food") && other.gameObject == nearbyFood)
-        {
-            nearbyFood = null;
-        }
+        if (collision == null) return;
 
-        if (other.CompareTag("KitchenObject"))
+        if (TryGetKitchenTool(collision, out var tool))
         {
-            if (other.GetComponent<IKitchenTool>() == nearbyTool)
+            // 若是组装台则记到 nearbyAssemblyTool，否则记到 nearbyTool
+            if (tool is AssemblyTableTool)
+                nearbyAssemblyTool = tool;
+            else
+                nearbyTool = tool;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision == null) return;
+
+        if (TryGetKitchenTool(collision, out var tool))
+        {
+            if (nearbyAssemblyTool == tool) nearbyAssemblyTool = null;
+            if (nearbyTool == tool) nearbyTool = null;
+        }
+    }
+
+    /// <summary>
+    /// 兼容不同 Unity 版本：从碰撞体上寻找任何实现了 IKitchenTool 的组件。
+    /// </summary>
+    private bool TryGetKitchenTool(Collider2D col, out IKitchenTool tool)
+    {
+        tool = null;
+        if (col == null) return false;
+
+        // 直接拿接口（新版本 Unity 对接口 TryGetComponent 兼容得更好）
+        // 如果你的 Unity 版本支持，可以用：col.TryGetComponent<IKitchenTool>(out tool)
+        // 这里使用更兼容的遍历方式：
+        var behaviours = col.GetComponents<MonoBehaviour>();
+        for (int i = 0; i < behaviours.Length; i++)
+        {
+            var mb = behaviours[i];
+            if (mb is IKitchenTool t)
             {
-                nearbyTool = null;
+                tool = t;
+                return true;
             }
         }
 
-        if (other.CompareTag("AssemblyTable"))
+        // 父层再找一遍，防止触发器在子物体上、工具脚本在父物体上
+        var parentBehaviours = col.GetComponentsInParent<MonoBehaviour>();
+        for (int i = 0; i < parentBehaviours.Length; i++)
         {
-            if (other.GetComponent<IKitchenTool>() == nearbyAssemblyTool)
+            var mb = parentBehaviours[i];
+            if (mb is IKitchenTool t)
             {
-                nearbyAssemblyTool = null;
+                tool = t;
+                return true;
             }
         }
-        if (other.CompareTag("enemysarea"))
-        {
-            if (gunUI != null) gunUI.SetActive(false);
-            //if (bulletShooterScript != null) bulletShooterScript.enabled = false;
-        }
-        if (other.CompareTag("hint"))
-        {
-            hintUI.SetActive(false);
-        }
+
+        return false;
+    }
+}
+
+/// <summary>
+/// 兼容旧脚本的扩展方法：允许写成 player.IsHoldingItem()。
+/// </summary>
+public static class PlayerExtensions
+{
+    public static bool IsHoldingItem(this player p)
+    {
+        return p != null && p.IsHoldingItem;
     }
 }

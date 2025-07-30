@@ -19,26 +19,27 @@ public class FridgeUIManager : MonoBehaviour
 
     public TextMeshProUGUI inventoryText;
 
-  private void Awake()
-{
-    mangoButton.onClick.AddListener(() => SafeSelectItem("mango"));
-    coconutButton.onClick.AddListener(() => SafeSelectItem("coconut"));
-    grapeButton.onClick.AddListener(() => SafeSelectItem("grape"));
-    iceButton.onClick.AddListener(() => SafeSelectItem("ice"));
-}
+    private void Awake()
+    {
+        // 绑定按钮点击；仅负责“拿到手上”，不直接改 KitchenSystem（避免重复加料）
+        mangoButton.onClick.AddListener(() => SafeSelectItem("mango"));
+        coconutButton.onClick.AddListener(() => SafeSelectItem("coconut"));
+        grapeButton.onClick.AddListener(() => SafeSelectItem("grape"));
+        iceButton.onClick.AddListener(() => SafeSelectItem("ice"));
+    }
 
-private void SafeSelectItem(string itemName)
-{
-    try
+    private void SafeSelectItem(string itemName)
     {
-        Debug.Log($"🟡 尝试点击按钮：{itemName}");
-        SelectItem(itemName);
+        try
+        {
+            Debug.Log($"🟡 尝试点击按钮：{itemName}");
+            SelectItem(itemName);
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"❌ SelectItem('{itemName}') 出错：{ex.Message}\n{ex.StackTrace}");
+        }
     }
-    catch (System.Exception ex)
-    {
-        Debug.LogError($"❌ SelectItem('{itemName}') 出错：{ex.Message}\n{ex.StackTrace}");
-    }
-}
 
     public void OpenPanel()
     {
@@ -63,22 +64,22 @@ private void SafeSelectItem(string itemName)
     {
         itemName = itemName.ToLower();
 
-        var player = FindObjectOfType<player>();
-        if (player == null)
+        var p = FindObjectOfType<player>();
+        if (p == null)
         {
             Debug.LogError("❌ 未找到玩家对象！");
             ClosePanel();
             return;
         }
 
-        if (player.headPoint == null)
+        if (p.headPoint == null)
         {
             Debug.LogError("❌ 玩家未绑定 headPoint，请在 Inspector 中设置！");
             ClosePanel();
             return;
         }
 
-        if (player.IsHoldingItem())
+        if (p.IsHoldingItem())
         {
             Debug.Log("⚠️ 玩家已持有物品，不能再拿！");
             ClosePanel();
@@ -108,10 +109,12 @@ private void SafeSelectItem(string itemName)
             return;
         }
 
-        // 一切正常：扣库存 → 生成 → 加入厨房系统
+        // 一切正常：扣库存 → 生成 → 给玩家手上
         InventoryManager.Instance.UseItem(itemName);
-        player.ReceiveItem(prefab);
-        KitchenSystem.Instance.AddIngredient(itemName);
+        p.ReceiveItem(prefab);
+
+        // 关键修复：不要在冰箱阶段往 KitchenSystem 里加材料
+        // 由 AssemblyTableTool 在玩家“放置”时再 AddIngredient()
 
         Debug.Log($"✅ 生成 {itemName} 到玩家手上！");
         ClosePanel();

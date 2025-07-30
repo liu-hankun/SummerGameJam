@@ -15,7 +15,7 @@ MonoBehaviour:
   recipes:
   - recipeName: Mango Smoothie
     ingredients:
-    - Ice
+    - ice
     - mango
   - recipeName: coconut Smoothie
     ingredients:

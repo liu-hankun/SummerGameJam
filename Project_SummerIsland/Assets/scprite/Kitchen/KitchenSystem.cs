@@ -8,6 +8,10 @@ public class KitchenSystem : MonoBehaviour
     public RecipeBook recipeBook;
     private List<string> currentIngredients = new List<string>();
 
+    // —— New: same-frame duplicate guard ——
+    private int    _lastAddFrame = -1;
+    private string _lastAddName  = null;
+
     void Awake()
     {
         if (Instance == null) Instance = this;
@@ -16,19 +20,34 @@ public class KitchenSystem : MonoBehaviour
 
     public void AddIngredient(string name)
     {
-        currentIngredients.Add(name);
-        Debug.Log("添加食材：" + name);
+        // Normalize name to avoid duplicates like "Mango", "mango ", etc.
+        string n = NormalizeName(name);
+
+        // Same-frame same-name guard
+        if (_lastAddFrame == Time.frameCount && _lastAddName == n)
+        {
+            Debug.Log($"[KitchenSystem] same-frame duplicate blocked: {n}");
+            return;
+        }
+        _lastAddFrame = Time.frameCount;
+        _lastAddName  = n;
+
+        currentIngredients.Add(n);
+        Debug.Log("添加食材：" + n);
+        // Optional: enable to trace who called AddIngredient
+        // Debug.Log($"[KitchenSystem] AddIngredient caller:\n{System.Environment.StackTrace}");
     }
 
     public bool HasIngredient(string name)
     {
-        return currentIngredients.Contains(name);
+        return currentIngredients.Contains(NormalizeName(name));
     }
 
     public void RemoveIngredient(string name)
     {
-        currentIngredients.Remove(name);
-        Debug.Log("移除食材：" + name);
+        string n = NormalizeName(name);
+        currentIngredients.Remove(n);
+        Debug.Log("移除食材：" + n);
     }
 
     public void PrintIngredients()
@@ -55,10 +74,28 @@ public class KitchenSystem : MonoBehaviour
     private bool MatchRecipe(List<string> required)
     {
         List<string> current = new List<string>(currentIngredients);
-        current.Sort();
         List<string> check = new List<string>(required);
+
+        current = current.ConvertAll(NormalizeName);
+        check = check.ConvertAll(NormalizeName);
+
+        current.Sort();
         check.Sort();
 
+        // 打印以便调试
+        Debug.Log("🧪 当前材料：" + string.Join(", ", current));
+        Debug.Log("🧪 目标配方：" + string.Join(", ", check));
+
         return current.SequenceEqual(check);
+    }
+
+    public int CurrentIngredientCount()
+    {
+        return currentIngredients.Count;
+    }
+
+    private static string NormalizeName(string s)
+    {
+        return string.IsNullOrEmpty(s) ? "" : s.Trim().ToLowerInvariant();
     }
 }
