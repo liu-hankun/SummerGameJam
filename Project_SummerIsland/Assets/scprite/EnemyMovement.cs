@@ -58,7 +58,8 @@ public class EnemyMovement : MonoBehaviour
         // 掉落视觉
         if (dropPrefab != null)
         {
-            Instantiate(dropPrefab, transform.position, Quaternion.identity);
+           GameObject drop = Instantiate(dropPrefab, transform.position, Quaternion.identity);
+           Destroy(drop, 2f);
         }
 
         // ✅ 增加库存

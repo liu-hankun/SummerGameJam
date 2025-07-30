@@ -55,6 +55,16 @@ public class player : MonoBehaviour
         moveInput.y = Input.GetAxisRaw("Vertical");
         moveInput.Normalize();
 
+        if (Input.GetKey(KeyCode.A))
+        {
+            animator.SetBool("turnLeft", true);
+        }
+
+        if (Input.GetKey(KeyCode.D))
+        {
+            animator.SetBool("turnLeft", false);
+        }
+
         if (animator != null)
         {
             animator.SetFloat("Horizontal", moveInput.x);
@@ -102,6 +112,7 @@ public class player : MonoBehaviour
                 // 如果你还有其它 IKitchenTool，希望 Q 触发它们
                 nearbyOther.Interact(this);
             }
+
         }
 
         // ====== Space：组合材料（必须在组装台旁，且玩家手上为空） ======

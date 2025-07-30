@@ -290,7 +290,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 52, y: 120.1}
+  m_AnchoredPosition: {x: 52, y: 142.28}
   m_SizeDelta: {x: 653, y: 74.6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &303262265
@@ -313,10 +313,12 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Desiger: \nZhengyan Lu, Hankun Liu, Weiyi Kong\n\nProgrammer: \nZhengyan
-    Lu, Hankun Liu\n\nArtist:\nWeiyi Kong, Yingwei Hunag\n\nSpecial Thanks: \nAudio:\n\"Happy
-    Ukulele Island Surfing Theme\" by Tarush Singhal from OpenGameArt.org \n\n\"Summer
-    Sunday\" by celestialghost8 from OpenGameArt.org "
+  m_text: "Designers\n\nZhengyan\u202FLu\nHankun\u202FLiu\nWeiyi\u202FKong (Art)\n\nProgrammers\n\nZhengyan\u202FLu
+    \u2014\u202FKitchen\u202FArea\nHankun\u202FLiu \u2014\u202FMonster\u202FArea\n\nArtists\n\nWeiyi\u202FKong\nYingwei\u202FHuang\n\nAudio\n\u201CHappy\u202FUkulele\u202FIsland\u202FSurfing\u202FTheme\u201D
+    \u2013\u202FTarush\u202FSinghal (OpenGameArt.org)\n\u201CSummer\u202FSunday\u201D
+    \u2013\u202Fcelestialghost8 (OpenGameArt.org)\n\u201CSpace\u202FShoot\u202FSounds\u201D
+    \u2013\u202FRobin\u202FLamb (OpenGameArt.org)\n\nSpecial\u202FThanks\nAll contributors
+    on OpenGameArt.org for their wonderful assets"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -343,8 +345,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 20
-  m_fontSizeBase: 20
+  m_fontSize: 14.7
+  m_fontSizeBase: 14.7
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

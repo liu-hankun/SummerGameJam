@@ -12,6 +12,7 @@ TagManager:
   - enemysarea
   - hint
   - kitchenArea
+  - InventoryText
   layers:
   - Default
   - TransparentFX

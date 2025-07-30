@@ -8,6 +8,18 @@ public class BulletShooter : MonoBehaviour
     public GameObject bulletPrefab;   // 子弹预制体
     public float fireRate = 0.2f;     // 连射间隔
     private float fireCooldown = 0f;  // 冷却计时
+    public AudioClip shootSfx;              // ← 拖入“开火音效”
+    public float sfxVolume = 1f;
+
+    private AudioSource audioSrc;
+
+    void Awake()
+    {
+        audioSrc = GetComponent<AudioSource>();
+        if (audioSrc == null)
+            audioSrc = gameObject.AddComponent<AudioSource>();
+        audioSrc.spatialBlend = 0f;         // 2D 声
+    }
 
     void Update()
     {
@@ -27,6 +39,8 @@ public class BulletShooter : MonoBehaviour
         {
             GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.Euler(0, 0, angle));
             bullet.GetComponent<Rigidbody2D>().velocity = direction * 10f;   // 子弹速度，可调
+
+            if (shootSfx) audioSrc.PlayOneShot(shootSfx, sfxVolume);
 
             fireCooldown = fireRate; // 重置冷却
         }
