@@ -92,7 +92,8 @@ public class KitchenSystem : MonoBehaviour
     }
 
     /// <summary>
-    /// 判定是否匹配某个配方；若成功，清空材料、完成订单，并返回菜名。
+    /// 判定是否匹配某个配方；若成功，清空材料并返回菜名。
+    /// ❗不在这里完成订单；真正完成在 SubmitCounterTool.Interact() 时做。
     /// </summary>
     public bool TryCraft(out string craftedRecipeName)
     {
@@ -112,12 +113,7 @@ public class KitchenSystem : MonoBehaviour
                 craftedRecipeName = recipe.recipeName;
                 Debug.Log("你制作了料理：" + craftedRecipeName);
 
-                // 任务/计分（如有）
-                if (OrderManager.Instance != null)
-                {
-                    OrderManager.Instance.CompleteOrder(craftedRecipeName);
-                }
-
+                // ❗不要在这里完成订单；真正完成在提交台
                 currentIngredients.Clear();
                 return true;
             }
