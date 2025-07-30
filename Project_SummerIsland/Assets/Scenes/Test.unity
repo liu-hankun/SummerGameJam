@@ -3356,6 +3356,8 @@ MonoBehaviour:
   animator: {fileID: 605524043}
   headPoint: {fileID: 1669204472}
   heldItem: {fileID: 0}
+  gunUI: {fileID: 1694414128}
+  hintUI: {fileID: 893109206}
 --- !u!212 &605524041
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -4777,7 +4779,7 @@ MonoBehaviour:
   recipeBook: {fileID: 11400000, guid: b0bc650959519f54189ff6ef89d539ae, type: 2}
   currentOrder: 0
   score: 0
-  orderTimeLimit: 60
+  orderTimeLimit: 100
 --- !u!4 &767601020
 Transform:
   m_ObjectHideFlags: 0
@@ -7884,7 +7886,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Ice
   interactRadius: 7.14
-  dropPrefab: {fileID: 0}
+  dropPrefab: {fileID: 3339619615024596169, guid: 1e379f6f0753e42cbb9350ab884b7b4f, type: 3}
 --- !u!212 &1573304790
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -8723,7 +8725,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1694414129
 Transform:
   m_ObjectHideFlags: 0

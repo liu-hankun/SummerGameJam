@@ -25,6 +25,8 @@ public class player : MonoBehaviour
     private SubmitCounterTool nearbySubmit = null;
     private IKitchenTool nearbyOther = null;
 
+    public GameObject gunUI;
+    public GameObject hintUI;
     // —— 输入侧同帧防抖 ——
     private int _lastEFrame = -1;
     private int _lastQFrame = -1;
@@ -150,13 +152,32 @@ public class player : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision == null) return;
-        CacheTool(collision, enter:true);
-    }
+        CacheTool(collision, enter: true);
 
+        if (collision.CompareTag("enemysarea"))
+        {
+            if (gunUI != null) gunUI.SetActive(true);
+        }
+
+        if (collision.CompareTag("hint"))
+        {
+            hintUI.SetActive(true);
+        }
+    }
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision == null) return;
         CacheTool(collision, enter:false);
+
+        if (collision.CompareTag("enemysarea"))
+        {
+            if (gunUI != null) gunUI.SetActive(false);
+        }
+
+        if (collision.CompareTag("hint"))
+        {
+            hintUI.SetActive(false);
+        }
     }
 
     private void CacheTool(Collider2D col, bool enter)

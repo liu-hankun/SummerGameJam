@@ -18,10 +18,10 @@ public class InventoryManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
 
             // 如未初始化，给一点起始值；没有的话也没关系
-            EnsureKey("mango", 0);
-            EnsureKey("coconut", 0);
-            EnsureKey("grape", 0);
-            EnsureKey("ice", 0);
+            EnsureKey("mango", 1);
+            EnsureKey("coconut", 1);
+            EnsureKey("grape", 1);
+            EnsureKey("ice", 1);
 
             UpdateUI();
         }
