@@ -95,32 +95,39 @@ public class KitchenSystem : MonoBehaviour
     /// 判定是否匹配某个配方；若成功，清空材料并返回菜名。
     /// ❗不在这里完成订单；真正完成在 SubmitCounterTool.Interact() 时做。
     /// </summary>
-    public bool TryCraft(out string craftedRecipeName)
+   public bool TryCraft(out string craftedRecipeName)
+{
+    craftedRecipeName = null;
+
+    if (recipeBook == null || recipeBook.recipes == null || recipeBook.recipes.Count == 0)
     {
-        craftedRecipeName = null;
-
-        if (recipeBook == null || recipeBook.recipes == null || recipeBook.recipes.Count == 0)
-        {
-            Debug.LogWarning("[KitchenSystem] RecipeBook 未配置或为空。");
-            return false;
-        }
-
-        foreach (var recipe in recipeBook.recipes)
-        {
-            if (recipe == null) continue;
-            if (MatchRecipe(recipe.ingredients))
-            {
-                craftedRecipeName = recipe.recipeName;
-                Debug.Log("你制作了料理：" + craftedRecipeName);
-
-                // ❗不要在这里完成订单；真正完成在提交台
-                currentIngredients.Clear();
-                return true;
-            }
-        }
-
+        Debug.LogWarning("[KitchenSystem] RecipeBook 未配置或为空。");
+        // 也清空，满足“尝试就清理”的需求
+        currentIngredients.Clear();
         return false;
     }
+
+    bool success = false;
+
+    foreach (var recipe in recipeBook.recipes)
+    {
+        if (recipe == null) continue;
+
+        if (MatchRecipe(recipe.ingredients))
+        {
+            craftedRecipeName = recipe.recipeName;
+            Debug.Log("你制作了料理：" + craftedRecipeName);
+
+            // ❗不要在这里完成订单；真正完成在提交台（SubmitCounterTool）里做
+            success = true;
+            break;
+        }
+    }
+
+    // ✅ 关键：无论成功/失败，都清理组合台食材
+    currentIngredients.Clear();
+    return success;
+}
 
     private bool MatchRecipe(List<string> required)
     {
