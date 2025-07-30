@@ -77,3 +77,11 @@ RecipeBook.asset 中将所有 recipeName 替换为英文（如 "Mango Smoothie"�
 	1 完成水果的prefab 并绑定到FridgeUIPanel中（在UI里找）
 	2 需要你完成一下倒计时结束游戏
 	3需要测试一下组织功能，因为我没有绑prefab， 所有暂时用不了
+
+
+
+7. 30 lzy
+
+	e键打开冰箱
+	q键提交物品
+	space组合材料
