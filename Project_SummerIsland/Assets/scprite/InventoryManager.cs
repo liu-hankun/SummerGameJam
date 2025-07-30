@@ -6,6 +6,7 @@ public class InventoryManager : MonoBehaviour
 {
     public static InventoryManager Instance;
 
+    // 使用小写规范名作为键
     public Dictionary<string, int> inventory = new Dictionary<string, int>();
     public TextMeshProUGUI uiText;
 
@@ -16,11 +17,11 @@ public class InventoryManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
 
-            // 初始化库存
-            inventory["mango"] = 3;
-            inventory["coconut"] = 2;
-            inventory["grape"] = 2;
-            inventory["ice"] = 2;
+            // 如未初始化，给一点起始值；没有的话也没关系
+            EnsureKey("mango", 0);
+            EnsureKey("coconut", 0);
+            EnsureKey("grape", 0);
+            EnsureKey("ice", 0);
 
             UpdateUI();
         }
@@ -30,22 +31,66 @@ public class InventoryManager : MonoBehaviour
         }
     }
 
-    public void AddItem(string name)
+    private static string Normalize(string name)
     {
-        if (!inventory.ContainsKey(name)) inventory[name] = 0;
-        inventory[name]++;
-        UpdateUI();
+        return string.IsNullOrEmpty(name) ? "" : name.Trim().ToLowerInvariant();
     }
 
+    private void EnsureKey(string key, int init = 0)
+    {
+        key = Normalize(key);
+        if (!inventory.ContainsKey(key))
+            inventory[key] = init;
+    }
+
+    /// <summary>
+    /// 增加物品：会自动把名称规范化（小写、去空格）；返回增加后的数量。
+    /// </summary>
+    public int AddItem(string name)
+    {
+        string key = Normalize(name);
+        if (string.IsNullOrEmpty(key))
+        {
+            Debug.LogWarning("[Inventory] AddItem: name is empty");
+            return 0;
+        }
+
+        if (!inventory.ContainsKey(key)) inventory[key] = 0;
+        inventory[key]++;
+        Debug.Log($"[Inventory] +1 {key} => {inventory[key]}");
+
+        UpdateUI();
+        return inventory[key];
+    }
+
+    /// <summary>
+    /// 使用物品（-1）；成功返回 true。
+    /// </summary>
     public bool UseItem(string name)
     {
-        if (inventory.ContainsKey(name) && inventory[name] > 0)
+        string key = Normalize(name);
+        if (string.IsNullOrEmpty(key)) return false;
+
+        if (inventory.ContainsKey(key) && inventory[key] > 0)
         {
-            inventory[name]--;
+            inventory[key]--;
+            Debug.Log($"[Inventory] -1 {key} => {inventory[key]}");
             UpdateUI();
             return true;
         }
         return false;
+    }
+
+    public int GetCount(string name)
+    {
+        string key = Normalize(name);
+        if (inventory.TryGetValue(key, out var v)) return v;
+        return 0;
+    }
+
+    public bool HasItem(string name)
+    {
+        return GetCount(name) > 0;
     }
 
     public void UpdateUI()
@@ -57,10 +102,5 @@ public class InventoryManager : MonoBehaviour
         {
             uiText.text += $"{pair.Key}: {pair.Value}\n";
         }
-    }
-
-    public bool HasItem(string name)
-    {
-        return inventory.ContainsKey(name) && inventory[name] > 0;
     }
 }

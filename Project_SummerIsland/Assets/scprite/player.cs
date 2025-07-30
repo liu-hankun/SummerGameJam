@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 玩家控制 + 统一交互逻辑。
-/// 修复点：
-/// 1) 同帧防抖：一次按键只会触发一次 Interact()；
-/// 2) 交互目标唯一：优先和组装台交互，其次其他工具；
-/// 3) 提供 IsHoldingItem 属性；另外提供扩展方法 IsHoldingItem() 兼容旧代码。
+/// 玩家控制 + 交互键位：
+/// E = 打开冰箱（仅 FridgeTool）
+/// Q = 提交（优先 SubmitCounterTool；否则在组装台仅“放材料”）
+/// Space = 组合材料（仅在组装台、且玩家没拿物品时）
 /// </summary>
 public class player : MonoBehaviour
 {
@@ -17,21 +16,23 @@ public class player : MonoBehaviour
     public Animator animator;
 
     [Header("Held Item")]
-    public Transform headPoint;       // 手持物体的挂点
+    public Transform headPoint;
     public GameObject heldItem = null;
 
-    [Header("Nearby Tools")]
-    private IKitchenTool nearbyTool = null;            // 其它工具（如冰箱、切菜板等）
-    private IKitchenTool nearbyAssemblyTool = null;    // 组装台（优先交互）
+    [Header("Nearby Tools (auto)")]
+    private FridgeTool nearbyFridge = null;
+    private AssemblyTableTool nearbyAssembly = null;
+    private SubmitCounterTool nearbySubmit = null;
+    private IKitchenTool nearbyOther = null;
 
-    // —— 输入侧同帧防抖 ——（防止同一帧多次触发）
-    private int _lastInteractFrame = -1;
+    // —— 输入侧同帧防抖 ——
+    private int _lastEFrame = -1;
+    private int _lastQFrame = -1;
+    private int _lastSpaceFrame = -1;
 
     private Vector2 moveInput;
 
-    /// <summary>
-    /// 是否正在手持物体（给 Fridge/UI 等脚本调用）
-    /// </summary>
+    /// <summary>是否手持物体</summary>
     public bool IsHoldingItem => heldItem != null;
 
     private void Awake()
@@ -54,12 +55,64 @@ public class player : MonoBehaviour
             animator.SetFloat("Speed",      moveInput.sqrMagnitude);
         }
 
-        // ====== 交互输入（按 Q）—— 同帧只触发一次 ======
-        // 如果你想让 Space 也能交互，把下面条件改成：
-        // if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.Space))
-        if (Input.GetKeyDown(KeyCode.Q))
+        // ====== E：打开冰箱 ======
+        if (Input.GetKeyDown(KeyCode.E) && _lastEFrame != Time.frameCount)
         {
-            AttemptInteractOncePerFrame();
+            _lastEFrame = Time.frameCount;
+            if (nearbyFridge != null)
+            {
+                nearbyFridge.Interact(this);
+            }
+            else
+            {
+                // 靠近冰箱才能开；不在冰箱旁就不做事
+            }
+        }
+
+        // ====== Q：提交（优先提交台；否则在组装台“放材料”） ======
+        if (Input.GetKeyDown(KeyCode.Q) && _lastQFrame != Time.frameCount)
+        {
+            _lastQFrame = Time.frameCount;
+
+            if (nearbySubmit != null)
+            {
+                nearbySubmit.Interact(this);
+            }
+            else if (nearbyAssembly != null)
+            {
+                // 仅做“放材料”操作；不做组合
+                if (IsHoldingItem)
+                {
+                    nearbyAssembly.AddIngredientFromPlayer(this);
+                }
+                else
+                {
+                    Debug.Log("[player] 你没有拿材料，按 Q 只用于放材料；按 Space 可尝试组合。");
+                }
+            }
+            else if (nearbyOther != null)
+            {
+                // 如果你还有其它 IKitchenTool，希望 Q 触发它们
+                nearbyOther.Interact(this);
+            }
+        }
+
+        // ====== Space：组合材料（必须在组装台旁，且玩家手上为空） ======
+        if (Input.GetKeyDown(KeyCode.Space) && _lastSpaceFrame != Time.frameCount)
+        {
+            _lastSpaceFrame = Time.frameCount;
+
+            if (nearbyAssembly != null)
+            {
+                if (!IsHoldingItem)
+                {
+                    nearbyAssembly.Combine(this);
+                }
+                else
+                {
+                    Debug.Log("[player] 你手上有物品，无法组合。请先把材料放到组装台（按 Q）。");
+                }
+            }
         }
     }
 
@@ -72,23 +125,7 @@ public class player : MonoBehaviour
     }
 
     /// <summary>
-    /// 在同一帧内只允许一次 Interact 调用（无论你按了几个键或被多次触发）。
-    /// </summary>
-    private void AttemptInteractOncePerFrame()
-    {
-        if (_lastInteractFrame == Time.frameCount) return; // 同帧重复拦截
-        _lastInteractFrame = Time.frameCount;
-
-        // 只选择一个交互目标：优先组装台
-        IKitchenTool target = nearbyAssemblyTool ?? nearbyTool;
-        if (target != null)
-        {
-            target.Interact(this);
-        }
-    }
-
-    /// <summary>
-    /// 玩家接收/切换手上物体（会销毁旧的）。
+    /// 玩家接收一个新物品（会把旧的销毁），实例化在 headPoint。
     /// </summary>
     public void ReceiveItem(GameObject itemPrefab)
     {
@@ -101,7 +138,6 @@ public class player : MonoBehaviour
         if (itemPrefab != null && headPoint != null)
         {
             heldItem = Instantiate(itemPrefab, headPoint.position, Quaternion.identity);
-            // 建议把手持物体作为headPoint的子物体，方便定位
             heldItem.transform.SetParent(headPoint, worldPositionStays: true);
         }
     }
@@ -109,73 +145,42 @@ public class player : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision == null) return;
-
-        if (TryGetKitchenTool(collision, out var tool))
-        {
-            // 若是组装台则记到 nearbyAssemblyTool，否则记到 nearbyTool
-            if (tool is AssemblyTableTool)
-                nearbyAssemblyTool = tool;
-            else
-                nearbyTool = tool;
-        }
+        CacheTool(collision, enter:true);
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision == null) return;
-
-        if (TryGetKitchenTool(collision, out var tool))
-        {
-            if (nearbyAssemblyTool == tool) nearbyAssemblyTool = null;
-            if (nearbyTool == tool) nearbyTool = null;
-        }
+        CacheTool(collision, enter:false);
     }
 
-    /// <summary>
-    /// 兼容不同 Unity 版本：从碰撞体上寻找任何实现了 IKitchenTool 的组件。
-    /// </summary>
-    private bool TryGetKitchenTool(Collider2D col, out IKitchenTool tool)
+    private void CacheTool(Collider2D col, bool enter)
     {
-        tool = null;
-        if (col == null) return false;
+        // 优先检查具体类型
+        var f = col.GetComponent<FridgeTool>();
+        if (f != null) { nearbyFridge = enter ? f : (nearbyFridge == f ? null : nearbyFridge); }
 
-        // 直接拿接口（新版本 Unity 对接口 TryGetComponent 兼容得更好）
-        // 如果你的 Unity 版本支持，可以用：col.TryGetComponent<IKitchenTool>(out tool)
-        // 这里使用更兼容的遍历方式：
-        var behaviours = col.GetComponents<MonoBehaviour>();
-        for (int i = 0; i < behaviours.Length; i++)
+        var a = col.GetComponent<AssemblyTableTool>();
+        if (a != null) { nearbyAssembly = enter ? a : (nearbyAssembly == a ? null : nearbyAssembly); }
+
+        var s = col.GetComponent<SubmitCounterTool>();
+        if (s != null) { nearbySubmit = enter ? s : (nearbySubmit == s ? null : nearbySubmit); }
+
+        // 其余 IKitchenTool（不覆盖上面的具体优先级）
+        var any = col.GetComponent<MonoBehaviour>() as IKitchenTool;
+        if (any != null && any != f && any != a && any != s)
         {
-            var mb = behaviours[i];
-            if (mb is IKitchenTool t)
-            {
-                tool = t;
-                return true;
-            }
+            if (enter) nearbyOther = any;
+            else if (nearbyOther == any) nearbyOther = null;
         }
-
-        // 父层再找一遍，防止触发器在子物体上、工具脚本在父物体上
-        var parentBehaviours = col.GetComponentsInParent<MonoBehaviour>();
-        for (int i = 0; i < parentBehaviours.Length; i++)
-        {
-            var mb = parentBehaviours[i];
-            if (mb is IKitchenTool t)
-            {
-                tool = t;
-                return true;
-            }
-        }
-
-        return false;
     }
 }
 
 /// <summary>
-/// 兼容旧脚本的扩展方法：允许写成 player.IsHoldingItem()。
+/// 兼容旧脚本：允许以 player.IsHoldingItem() 的形式调用。
 /// </summary>
 public static class PlayerExtensions
 {
-    public static bool IsHoldingItem(this player p)
-    {
-        return p != null && p.IsHoldingItem;
-    }
+    public static bool IsHoldingItem(this player p) => p != null && p.IsHoldingItem;
 }
+

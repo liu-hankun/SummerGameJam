@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class IceBlock : MonoBehaviour
 {
-    //??????????????????????
-    public string itemName = "Ice";
+    // 右键增加“ice”库存（名称统一使用小写规范名以匹配 InventoryManager）
+    public string itemName = "ice";
     public float interactRadius = 2f;
     public GameObject dropPrefab;  
 
@@ -14,7 +14,12 @@ public class IceBlock : MonoBehaviour
 
     void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player").transform;
+        var playerGo = GameObject.FindGameObjectWithTag("Player");
+        player = playerGo != null ? playerGo.transform : null;
+        if (player == null)
+        {
+            Debug.LogWarning("[IceBlock] 未找到带有 Player 标签的对象。");
+        }
     }
 
     void Update()
@@ -23,14 +28,15 @@ public class IceBlock : MonoBehaviour
 
         float distance = Vector2.Distance(transform.position, player.position);
 
+        // 右键（Mouse1）且距离足够近
         if (distance <= interactRadius && Input.GetMouseButtonDown(1))
         {
             if (canInteract)
             {
-                InventoryManager.Instance.AddItem(itemName); 
+                InventoryManager.Instance?.AddItem(itemName); // 归一化在 InventoryManager 内完成
                 DropItem();                                  
                 canInteract = false;
-                Invoke(nameof(ResetInteract), 0.5f);
+                Invoke(nameof(ResetInteract), 0.5f); // 简单冷却
             }
         }
     }
@@ -39,16 +45,13 @@ public class IceBlock : MonoBehaviour
     {
         if (dropPrefab == null) return;
 
-        
         Vector2 dropPos = new Vector2(
-            transform.position.x + Random.Range(-3f, 3f),
-            transform.position.y - Random.Range(5f, 6f)
+            transform.position.x + Random.Range(-0.5f, 0.5f),
+            transform.position.y + Random.Range(-0.5f, 0.5f)
         );
 
         GameObject drop = Instantiate(dropPrefab, dropPos, Quaternion.identity);
-
-        
-        Destroy(drop, 2f);
+        Destroy(drop, 1.5f);
     }
 
     void ResetInteract()
@@ -62,5 +65,3 @@ public class IceBlock : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, interactRadius);
     }
 }
-
-
