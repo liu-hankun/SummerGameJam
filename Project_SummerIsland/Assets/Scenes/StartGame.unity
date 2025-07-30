@@ -290,8 +290,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 2.2, y: 160.84}
-  m_SizeDelta: {x: 467.2, y: 74.6}
+  m_AnchoredPosition: {x: 52, y: 120.1}
+  m_SizeDelta: {x: 653, y: 74.6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &303262265
 MonoBehaviour:
@@ -314,7 +314,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "Desiger: \nZhengyan Lu, Hankun Liu, Weiyi Kong\n\nProgrammer: \nZhengyan
-    Lu, Hankun Liu\n\nArtist:\nWeiyi Kong, Chengzi\n\nSpecial Thanks: \nAudio:\n\"Happy
+    Lu, Hankun Liu\n\nArtist:\nWeiyi Kong, Yingwei Hunag\n\nSpecial Thanks: \nAudio:\n\"Happy
     Ukulele Island Surfing Theme\" by Tarush Singhal from OpenGameArt.org \n\n\"Summer
     Sunday\" by celestialghost8 from OpenGameArt.org "
   m_isRightToLeft: 0
@@ -1984,8 +1984,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -4.7, y: 41.1}
-  m_SizeDelta: {x: 455.76, y: 133.4}
+  m_AnchoredPosition: {x: 28.6, y: 75.1}
+  m_SizeDelta: {x: 611.4, y: 133.4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1628473486
 MonoBehaviour:
@@ -2007,13 +2007,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'WASD to move
-
-
-    RightClick to shoot
-
-
-    Escape to Open the PauseMeun'
+  m_text: "W/A/S/D \u2013 Move\n\nLeft Mouse Button \u2013 Shoot\n\nRight Mouse Button
+    \u2013 Collect Ice (when near Ice Monster)\n\nE \u2013 Open Fridge\n\nQ \u2013
+    Submit Items (Combination Table / Delivery Table)\n\nSpace \u2013 Combine Ingredients
+    / Clear Table\n\nEsc \u2013 Pause Game"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2040,8 +2037,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

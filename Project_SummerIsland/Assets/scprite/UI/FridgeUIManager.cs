@@ -28,6 +28,13 @@ public class FridgeUIManager : MonoBehaviour
         iceButton.onClick.AddListener(() => SafeSelectItem("ice"));
     }
 
+    private void Update()
+    {
+        if(Input.GetMouseButtonDown(1))
+        {
+            fridgePanel.SetActive(false);
+        }
+    }
     private void SafeSelectItem(string itemName)
     {
         try
