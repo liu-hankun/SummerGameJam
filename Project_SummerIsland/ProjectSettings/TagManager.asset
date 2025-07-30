@@ -11,6 +11,7 @@ TagManager:
   - AssemblyTable
   - enemysarea
   - hint
+  - kitchenArea
   layers:
   - Default
   - TransparentFX

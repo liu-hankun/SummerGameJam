@@ -39,6 +39,11 @@ public class player : MonoBehaviour
     {
         if (rb == null) rb = GetComponent<Rigidbody2D>();
         if (animator == null) animator = GetComponentInChildren<Animator>();
+
+    if (animator == null) animator = GetComponentInChildren<Animator>();
+
+    // 永久冻结 2D Z 旋转，防止任何物理扭矩让玩家转圈
+    rb.constraints |= RigidbodyConstraints2D.FreezeRotation;
     }
 
     private void Update()
